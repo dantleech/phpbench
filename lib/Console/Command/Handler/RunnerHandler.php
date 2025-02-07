@@ -42,6 +42,7 @@ class RunnerHandler
     final public const OPT_PHP_DISABLE_INI = 'php-disable-ini';
     final public const OPT_FORMAT = 'format';
     final public const OPT_VARIANT_FILTER = 'variant';
+    final public const OPT_OPCACHE = 'php-opcache';
 
     public function __construct(
         private readonly Runner $runner,
@@ -82,6 +83,7 @@ class RunnerHandler
         $command->addOption(self::OPT_PHP_CONFIG, null, InputOption::VALUE_REQUIRED, 'JSON-like object of PHP INI settings');
         $command->addOption(self::OPT_PHP_WRAPPER, null, InputOption::VALUE_REQUIRED, 'Prefix process launch command with this string');
         $command->addOption(self::OPT_PHP_DISABLE_INI, null, InputOption::VALUE_NONE, 'Do not load the PHP INI file');
+        $command->addOption(self::OPT_OPCACHE, null, InputOption::VALUE_NONE, 'Enable opcache');
     }
 
     public function runFromInput(InputInterface $input, OutputInterface $output, RunnerConfig $config): Suite
@@ -92,6 +94,7 @@ class RunnerHandler
             ->withStopOnError($input->getOption(self::OPT_STOP_ON_ERROR))
             ->withAssertions($input->getOption(self::OPT_ASSERT))
             ->withVariantFilters($input->getOption(self::OPT_VARIANT_FILTER))
+            ->withOpcache($input->getOption(self::OPT_OPCACHE))
             ->withFormat($input->getOption(self::OPT_FORMAT));
 
         $parameters = $this->getParameters($input->getOption(self::OPT_PARAMETERS));

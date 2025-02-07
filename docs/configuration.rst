@@ -218,6 +218,28 @@ Default: ``[]``
 
 Types: ``["array"]``
 
+.. _configuration_runner_php_opcache:
+
+runner.php_opcache
+~~~~~~~~~~~~~~~~~~
+
+Enable PHP opcache when executing out-of-band benchmarks
+
+Default: ``false``
+
+Types: ``["bool"]``
+
+.. _configuration_runner_php_opcache_dir:
+
+runner.php_opcache_dir
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Default: ``.phpbench/opcache``
+
+Types: ``["string"]``
+
 .. _configuration_runner_php_disable_ini:
 
 runner.php_disable_ini

@@ -15,6 +15,7 @@ namespace PhpBench;
 use Composer\InstalledVersions;
 use PhpBench\Config\ConfigLoader;
 use PhpBench\Console\Application;
+use PhpBench\Console\Command\Handler\RunnerHandler;
 use PhpBench\DependencyInjection\Container;
 use PhpBench\Exception\ConfigurationPreProcessingError;
 use PhpBench\Extension\ConsoleExtension;
@@ -131,6 +132,10 @@ class PhpBench
 
         if ($input->hasParameterOption(['--php-disable-ini'])) {
             $configOverride[RunnerExtension::PARAM_PHP_DISABLE_INI] = true;
+        }
+
+        if ($input->hasParameterOption(['--' . RunnerHandler::OPT_OPCACHE])) {
+            $configOverride[RunnerExtension::PARAM_PHP_OPCACHE] = true;
         }
 
         if ($value = $input->getParameterOption(['--profile'])) {

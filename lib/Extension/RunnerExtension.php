@@ -2,6 +2,7 @@
 
 namespace PhpBench\Extension;
 
+use PhpBench\Benchmark\Feature\OpcacheFeature;
 use PhpBench\Environment\Provider\Uname;
 use PhpBench\Environment\Provider\Php;
 use PhpBench\Environment\Provider\Opcache;
@@ -43,6 +44,7 @@ use PhpBench\Expression\ExpressionLanguage;
 use PhpBench\Expression\Printer;
 use PhpBench\Expression\Printer\EvaluatingPrinter;
 use PhpBench\Json\JsonDecoder;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use PhpBench\Progress\Logger\BlinkenLogger;
 use PhpBench\Progress\Logger\DotsLogger;
@@ -88,6 +90,8 @@ class RunnerExtension implements ExtensionInterface
     final public const PARAM_PHP_BINARY = 'runner.php_binary';
     final public const PARAM_PHP_CONFIG = 'runner.php_config';
     final public const PARAM_PHP_DISABLE_INI = 'runner.php_disable_ini';
+    final public const PARAM_PHP_OPCACHE = 'runner.php_opcache';
+    final public const PARAM_PHP_OPCACHE_DIR = 'runner.php_opcache_dir';
     final public const PARAM_PHP_WRAPPER = 'runner.php_wrapper';
     final public const PARAM_PHP_ENV = 'runner.php_env';
     final public const PARAM_PROGRESS = 'runner.progress';
@@ -137,6 +141,8 @@ class RunnerExtension implements ExtensionInterface
             self::PARAM_PATH => null,
             self::PARAM_PHP_BINARY => null,
             self::PARAM_PHP_CONFIG => [],
+            self::PARAM_PHP_OPCACHE => false,
+            self::PARAM_PHP_OPCACHE_DIR => '.phpbench/opcache',
             self::PARAM_PHP_DISABLE_INI => false,
             self::PARAM_PHP_WRAPPER => null,
             self::PARAM_PHP_ENV => null,
@@ -170,6 +176,8 @@ class RunnerExtension implements ExtensionInterface
         $resolver->setAllowedTypes(self::PARAM_PATH, ['string', 'array', 'null']);
         $resolver->setAllowedTypes(self::PARAM_PHP_BINARY, ['string', 'null']);
         $resolver->setAllowedTypes(self::PARAM_PHP_CONFIG, ['array']);
+        $resolver->setAllowedTypes(self::PARAM_PHP_OPCACHE, ['bool']);
+        $resolver->setAllowedTypes(self::PARAM_PHP_OPCACHE_DIR, ['string']);
         $resolver->setAllowedTypes(self::PARAM_PHP_DISABLE_INI, ['bool']);
         $resolver->setAllowedTypes(self::PARAM_PHP_WRAPPER, ['string', 'null']);
         $resolver->setAllowedTypes(self::PARAM_PHP_ENV, ['array', 'null']);
@@ -203,6 +211,7 @@ class RunnerExtension implements ExtensionInterface
             self::PARAM_PATH => 'Path or paths to the benchmarks',
             self::PARAM_PHP_BINARY => 'Specify a PHP binary to use when executing out-of-band benchmarks, e.g. ``/usr/bin/php6``, defaults to the version of PHP used to invoke PHPBench',
             self::PARAM_PHP_CONFIG => 'Map of PHP ini settings to use when executing out-of-band benchmarks',
+            self::PARAM_PHP_OPCACHE => 'Enable PHP opcache when executing out-of-band benchmarks',
             self::PARAM_PHP_DISABLE_INI => 'Disable reading the default PHP configuration',
             self::PARAM_PHP_WRAPPER => 'Wrap the PHP binary with this command (e.g. ``blackfire run``)',
             self::PARAM_PHP_ENV => 'Key-value set of environment variables to pass to the PHP process',
@@ -402,7 +411,19 @@ class RunnerExtension implements ExtensionInterface
                 $container->hasParameter(self::PARAM_PHP_BINARY) ? $container->getParameter(self::PARAM_PHP_BINARY) : null,
                 $container->hasParameter(self::PARAM_PHP_CONFIG) ? $container->getParameter(self::PARAM_PHP_CONFIG) : null,
                 $container->hasParameter(self::PARAM_PHP_WRAPPER) ? $container->getParameter(self::PARAM_PHP_WRAPPER) : null,
-                $container->hasParameter(self::PARAM_PHP_DISABLE_INI) ? $container->getParameter(self::PARAM_PHP_DISABLE_INI) : false
+                $container->hasParameter(self::PARAM_PHP_DISABLE_INI) ? $container->getParameter(self::PARAM_PHP_DISABLE_INI) : false,
+                new OpcacheFeature(
+                    new Filesystem(),
+                    $container->hasParameter(
+                        self::PARAM_PHP_OPCACHE
+                    ) ? $container->getParameter(self::PARAM_PHP_OPCACHE) : false,
+                    $container->hasParameter(
+                        self::PARAM_PHP_OPCACHE_DIR
+                    ) ? Path::makeAbsolute(
+                        $container->getParameter(self::PARAM_PHP_OPCACHE_DIR),
+                        $container->getParameter(CoreExtension::PARAM_WORKING_DIR),
+                    ) : false,
+                ),
             );
         });
 

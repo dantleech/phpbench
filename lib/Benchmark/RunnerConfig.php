@@ -18,7 +18,7 @@ use PhpBench\Model\SuiteCollection;
 /**
  * The benchmark runner context.
  */
-class RunnerConfig
+/** final */class RunnerConfig
 {
     /** @var string|array<string,mixed> */
     private string|array $executor = 'remote';
@@ -62,6 +62,8 @@ class RunnerConfig
 
     /** @var string[] */
     private array $variantFilters = [];
+
+    private bool $opcache;
 
     private function __construct()
     {
@@ -458,5 +460,12 @@ class RunnerConfig
             $field,
             $value
         ));
+    }
+
+    public function withOpcache(bool $opcache): self
+    {
+        $this->opcache = true;
+
+        return $this;
     }
 }

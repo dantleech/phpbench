@@ -125,6 +125,18 @@
                 "object"
             ]
         },
+        "runner.php_opcache": {
+            "description": "Enable PHP opcache when executing out-of-band benchmarks",
+            "type": [
+                "boolean"
+            ]
+        },
+        "runner.php_opcache_dir": {
+            "description": null,
+            "type": [
+                "string"
+            ]
+        },
         "runner.php_disable_ini": {
             "description": "Disable reading the default PHP configuration",
             "type": [
