@@ -10,6 +10,7 @@ use PhpBench\Data\Row;
 use PhpBench\Expression\Ast\Node;
 use PhpBench\Expression\Ast\StringNode;
 use PhpBench\Expression\Exception\EvaluationError;
+use PhpBench\Expression\Exception\VariableNotFound;
 use PhpBench\Expression\ExpressionEvaluator;
 use PhpBench\Model\SuiteCollection;
 use PhpBench\Registry\Config;
@@ -36,6 +37,7 @@ class ExpressionGenerator implements GeneratorInterface
     final public const PARAM_AGGREGATE = 'aggregate';
     final public const PARAM_BREAK = 'break';
     final public const PARAM_INCLUDE_BASELINE = 'include_baseline';
+    final public const PARAM_HIDE_COLS_WITH_MISSING_VARS = 'hide_cols_with_missing_vars';
 
     public function __construct(private readonly ExpressionEvaluator $evaluator, private readonly SuiteCollectionTransformer $transformer, private readonly LoggerInterface $logger)
     {
@@ -69,9 +71,11 @@ EOT
             self::PARAM_AGGREGATE => ['suite_tag', 'benchmark_class', 'subject_name', 'variant_index'],
             self::PARAM_BREAK => [],
             self::PARAM_INCLUDE_BASELINE => false,
+            self::PARAM_HIDE_COLS_WITH_MISSING_VARS => true,
         ]);
 
         $options->setAllowedTypes(self::PARAM_TITLE, ['null', 'string']);
+        $options->setAllowedTypes(self::PARAM_HIDE_COLS_WITH_MISSING_VARS, ['bool']);
         $options->setAllowedTypes(self::PARAM_DESCRIPTION, ['null', 'string']);
         $options->setAllowedTypes(self::PARAM_COLS, ['array', 'null']);
         $options->setAllowedTypes(self::PARAM_EXPRESSIONS, 'array');
@@ -94,6 +98,7 @@ EOT
                 'worst' => $formatTime('max(result_time_avg)'),
                 'stdev' => $formatTime('stdev(result_time_avg)'),
                 'rstdev' => 'rstdev(result_time_avg)',
+                'opcodes' => 'mean(result_opcode_count) ~ " " ~ format("±%.2fσ", stdev(result_opcode_count))',
             ], $expressions);
         });
         $options->setNormalizer(self::PARAM_BASELINE_EXPRESSIONS, function (Options $options, array $expressions) use ($formatTime) {
@@ -124,6 +129,7 @@ EOT
             self::PARAM_AGGREGATE => 'Group rows by these columns',
             self::PARAM_BREAK => 'Group tables by these columns',
             self::PARAM_INCLUDE_BASELINE => 'If the baseline should be included as additional rows, or if it should be inlined',
+            self::PARAM_HIDE_COLS_WITH_MISSING_VARS => 'Hide columns which would have produced a "variable not found" error',
         ]);
     }
 
@@ -146,14 +152,20 @@ EOT
             $aggregate = $config[self::PARAM_AGGREGATE];
 
             return implode('-', array_map(function (string $column) use ($row) {
-                return $row[$column];
+                return $row->get($column);
             }, $aggregate));
         });
 
         // evaluate the aggregated values with the expression language - at
         // this point the data frame is coverted to an array with Node
         // instances rather than scalar values
-        $table = iterator_to_array($this->evaluate($frame, $frames, $expressionMap, $baselineExpressionMap));
+        $table = iterator_to_array($this->evaluate(
+            $frame,
+            $frames,
+            $expressionMap,
+            $baselineExpressionMap,
+            $config[self::PARAM_HIDE_COLS_WITH_MISSING_VARS]
+        ));
 
         /** @var list<string> $breakCols */
         $breakCols = $config[self::PARAM_BREAK];
@@ -171,8 +183,13 @@ EOT
      *
      * @return Generator<int,array<string,Node>>
      */
-    private function evaluate(DataFrame $allFrame, DataFrames $frames, array $exprMap, array $baselineExprMap): Generator
-    {
+    private function evaluate(
+        DataFrame $allFrame,
+        DataFrames $frames,
+        array $exprMap,
+        array $baselineExprMap,
+        bool $hideColsWithMissingVars = false,
+    ): Generator {
         foreach ($frames as $frame) {
             assert($frame instanceof DataFrame);
             $evaledRow = [];
@@ -195,6 +212,14 @@ EOT
                         $expr,
                         $columnValues
                     );
+                } catch (VariableNotFound $notFound) {
+                    if ($hideColsWithMissingVars) {
+                        unset($exprMap[$name]);
+
+                        continue;
+                    }
+
+                    throw $notFound;
                 } catch (EvaluationError $e) {
                     $evaledRow[$name] = new StringNode('ERR');
                     $this->logger->warning(sprintf(

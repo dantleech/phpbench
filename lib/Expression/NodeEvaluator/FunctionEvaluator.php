@@ -34,6 +34,8 @@ class FunctionEvaluator implements NodeEvaluator
                     return $evaluator->evaluateType($node, PhpValue::class, $params);
                 }, $this->args($node->args()))
             );
+        } catch (EvaluationError $error) {
+            throw $error;
         } catch (Throwable $throwable) {
             throw new EvaluationError($node, $throwable->getMessage(), $throwable);
         }

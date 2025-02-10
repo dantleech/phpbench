@@ -1,0 +1,25 @@
+{
+    "subjects": [
+        "one",
+        "two"
+    ],
+    "iterations": [
+        10,
+        20,
+        10,
+        30
+    ]
+}
+---
+{
+    "hide_cols_with_missing_vars": false,
+    "cols": {
+        "foobar": "foobar",
+        "mode": "mode(result_time_avg)"
+    }
+}
+---
+Variable "foobar" not found, known variables: "suite", "has_baseline", "benchmark_name", "benchmark_class", "subject_name", "subject_groups", "subject_time_unit", "subject_time_precision", "subject_time_mode", "variant_index", "variant_name", "variant_params", "variant_revs", "variant_iterations", "suite_tag", "suite_date", "suite_time", "iteration_index", "result_time_net", "result_time_revs", "result_time_avg", "result_mem_peak", "result_mem_real", "result_mem_final", "result_reject_count", "result_comp_z_value", "result_comp_deviation":
+
+    foobar
+    ------

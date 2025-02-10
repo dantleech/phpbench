@@ -54,3 +54,10 @@
   Type(s): ``bool``, Default: ``false``
 
   If the baseline should be included as additional rows, or if it should be inlined
+
+.. _generator_expression_option_hide_cols_with_missing_vars:
+
+**hide_cols_with_missing_vars**:
+  Type(s): ``bool``, Default: ``true``
+
+  Hide columns which would have produced a "variable not found" error

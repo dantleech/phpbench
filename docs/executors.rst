@@ -21,6 +21,23 @@ Options:
 
 .. include:: ./executors/options/_remote.rst
 
+.. _executor_opcode:
+
+``opcode``
+----------
+
+As with remote but enables opcache debug mode and counts the number of
+opcodes:
+
+This benchmark records:
+
+- Same as `remote`
+- The number of opcodes (`result_opcode_count`)
+
+Options:
+
+.. include:: ./executors/options/_opcode.rst
+
 .. _executor_local:
 
 ``local``

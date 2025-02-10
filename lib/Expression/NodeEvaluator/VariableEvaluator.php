@@ -6,7 +6,7 @@ use PhpBench\Expression\Ast\Node;
 use PhpBench\Expression\Ast\PhpValueFactory;
 use PhpBench\Expression\Ast\VariableNode;
 use PhpBench\Expression\Evaluator;
-use PhpBench\Expression\Exception\EvaluationError;
+use PhpBench\Expression\Exception\VariableNotFound;
 use PhpBench\Expression\NodeEvaluator;
 
 class VariableEvaluator implements NodeEvaluator
@@ -31,7 +31,7 @@ class VariableEvaluator implements NodeEvaluator
     private function resolveFromParameters(string $key, array $params, VariableNode $node)
     {
         if (!isset($params[$key])) {
-            throw new EvaluationError(
+            throw new VariableNotFound(
                 $node,
                 sprintf(
                     'Variable "%s" not found, known variables: "%s"',

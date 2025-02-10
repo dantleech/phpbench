@@ -17,4 +17,11 @@ class EvaluationError extends RuntimeException
     {
         return $this->node;
     }
+
+    public function withMessage(string $message): self
+    {
+        $this->message = $message;
+
+        return $this;
+    }
 }

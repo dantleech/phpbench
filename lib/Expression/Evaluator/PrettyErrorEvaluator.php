@@ -45,12 +45,12 @@ class PrettyErrorEvaluator implements Evaluator
     private function prettyError(Node $rootNode, EvaluationError $error, array $params): EvaluationError
     {
         try {
-            return new EvaluationError($error->node(), implode(PHP_EOL, [
+            return $error->withMessage(implode(PHP_EOL, [
                 sprintf('%s:', $error->getMessage()),
                 '',
                 '    ' . $this->printer->print($rootNode),
                 '    ' . $this->underlineFactory->underline($error->node())->print($rootNode),
-            ]), $error);
+            ]));
         } catch (PrinterError) {
             throw $error;
         }

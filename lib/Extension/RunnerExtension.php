@@ -33,6 +33,7 @@ use PhpBench\Environment\Supplier;
 use PhpBench\Executor\Benchmark\DebugExecutor;
 use PhpBench\Executor\Benchmark\LocalExecutor;
 use PhpBench\Executor\Benchmark\MemoryCentricMicrotimeExecutor;
+use PhpBench\Executor\Benchmark\OpcodeExecutor;
 use PhpBench\Executor\Benchmark\RemoteExecutor;
 use PhpBench\Executor\CompositeExecutor;
 use PhpBench\Executor\Method\ErrorHandlingExecutorDecorator;
@@ -43,7 +44,9 @@ use PhpBench\Expression\ExpressionLanguage;
 use PhpBench\Expression\Printer;
 use PhpBench\Expression\Printer\EvaluatingPrinter;
 use PhpBench\Json\JsonDecoder;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
+use PhpBench\Opcache\OpcodeDebugParser;
 use PhpBench\Progress\Logger\BlinkenLogger;
 use PhpBench\Progress\Logger\DotsLogger;
 use PhpBench\Progress\Logger\HistogramLogger;
@@ -374,6 +377,16 @@ class RunnerExtension implements ExtensionInterface
             return new DebugExecutor();
         }, [
             self::TAG_EXECUTOR => ['name' => 'debug']
+        ]);
+
+        $container->register(OpcodeExecutor::class, function (Container $container) {
+            return new OpcodeExecutor(
+                $container->get(Launcher::class),
+                new OpcodeDebugParser(),
+                new Filesystem(),
+            );
+        }, [
+            self::TAG_EXECUTOR => ['name' => 'opcode']
         ]);
 
         $container->register(Finder::class, function (Container $container) {

@@ -19,6 +19,8 @@ return [
             'mem_peak',
             'mode',
             'rstdev',
+            'opcodes',
+
         ]
     ],
     'bar_chart_time' => [
@@ -41,6 +43,7 @@ return [
             'time_avg' => 'display_as_time(first(result_time_avg), first(subject_time_unit))',
             'comp_z_value' => 'format("%+.2fσ", first(result_comp_z_value))',
             'comp_deviation' => 'format("%+.2f%%", first(result_comp_deviation))',
+            'opcodes' => 'first(result_opcode_count)',
         ],
         'aggregate' => ['benchmark_class', 'subject_name', 'variant_index', 'iteration_index'],
     ],

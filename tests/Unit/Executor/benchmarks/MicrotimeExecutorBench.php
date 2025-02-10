@@ -37,6 +37,15 @@ class MicrotimeExecutorBench
         echo 'Hello World';
     }
 
+    public function opcacheOptimisable(): void
+    {
+        if (false) {
+            for ($i = 0; $i < 10000; $i++) {
+                throw new \Exception('should never happen');
+            }
+        }
+    }
+
     public function doSomething(): void
     {
         static $count = 0;

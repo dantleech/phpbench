@@ -2,6 +2,6 @@
 
 namespace PhpBench\Expression\Exception;
 
-class KeyDoesNotExist extends EvaluationError
+final class VariableNotFound extends EvaluationError
 {
 }

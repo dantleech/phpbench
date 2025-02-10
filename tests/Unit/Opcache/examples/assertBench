@@ -1,0 +1,192 @@
+
+$_main:
+     ; (lines=7, args=0, vars=0, tmps=2)
+     ; (before optimizer)
+     ; /home/daniel/www/phpbench/phpbench/vendor/autoload.php:1-8
+     ; return  [] RANGE[0..0]
+0000 EXT_STMT
+0001 INCLUDE_OR_EVAL (require_once) string("/home/daniel/www/phpbench/phpbench/vendor/composer/autoload_real.php")
+0002 EXT_STMT
+0003 INIT_STATIC_METHOD_CALL 0 string("ComposerAutoloaderInited1dad5bad5e40595560d28332c7af39") string("getLoader")
+0004 V1 = DO_FCALL
+0005 RETURN V1
+0006 RETURN int(1)
+
+$_main:
+     ; (lines=2, args=0, vars=0, tmps=0)
+     ; (before optimizer)
+     ; /home/daniel/www/phpbench/phpbench/vendor/composer/autoload_real.php:1-76
+     ; return  [] RANGE[0..0]
+0000 EXT_STMT
+0001 RETURN int(1)
+
+composerRequireed1dad5bad5e40595560d28332c7af39:
+     ; (lines=16, args=2, vars=2, tmps=7)
+     ; (before optimizer)
+     ; /home/daniel/www/phpbench/phpbench/vendor/composer/autoload_real.php:68-75
+     ; return  [] RANGE[0..0]
+0000 CV0($fileIdentifier) = RECV 1
+0001 CV1($file) = RECV 2
+0002 EXT_STMT
+0003 T2 = FETCH_IS (global) string("GLOBALS")
+0004 T3 = FETCH_DIM_IS T2 string("__composer_autoload_files")
+0005 T4 = ISSET_ISEMPTY_DIM_OBJ (empty) T3 CV0($fileIdentifier)
+0006 JMPZ T4 0014
+0007 EXT_STMT
+0008 INCLUDE_OR_EVAL (require) CV1($file)
+0009 EXT_STMT
+0010 V6 = FETCH_W (global) string("GLOBALS")
+0011 V7 = FETCH_DIM_W V6 string("__composer_autoload_files")
+0012 ASSIGN_DIM V7 CV0($fileIdentifier)
+0013 OP_DATA bool(true)
+0014 EXT_STMT
+0015 RETURN null
+
+ComposerAutoloaderInited1dad5bad5e40595560d28332c7af39::loadClassLoader:
+     ; (lines=8, args=1, vars=1, tmps=2)
+     ; (before optimizer)
+     ; /home/daniel/www/phpbench/phpbench/vendor/composer/autoload_real.php:9-14
+     ; return  [] RANGE[0..0]
+0000 CV0($class) = RECV 1
+0001 EXT_STMT
+0002 T1 = IS_IDENTICAL CV0($class) string("Composer\Autoload\ClassLoader")
+0003 JMPZ T1 0006
+0004 EXT_STMT
+0005 INCLUDE_OR_EVAL (require) string("/home/daniel/www/phpbench/phpbench/vendor/composer/ClassLoader.php")
+0006 EXT_STMT
+0007 RETURN null
+
+ComposerAutoloaderInited1dad5bad5e40595560d28332c7af39::getLoader:
+     ; (lines=124, args=0, vars=9, tmps=47)
+     ; (before optimizer)
+     ; /home/daniel/www/phpbench/phpbench/vendor/composer/autoload_real.php:19-65
+     ; return  [] RANGE[0..0]
+0000 EXT_STMT
+0001 T9 = FETCH_STATIC_PROP_R string("loader") (self) (exception)
+0002 T10 = TYPE_CHECK TYPE [bool, long, double, string, array, object, resource] T9
+0003 JMPZ T10 0007
+0004 EXT_STMT
+0005 T11 = FETCH_STATIC_PROP_R string("loader") (self) (exception)
+0006 RETURN T11
+0007 EXT_STMT
+0008 INCLUDE_OR_EVAL (require) string("/home/daniel/www/phpbench/phpbench/vendor/composer/platform_check.php")
+0009 EXT_STMT
+0010 INIT_FCALL 3 128 string("spl_autoload_register")
+0011 SEND_VAL array(...) 1
+0012 SEND_VAL bool(true) 2
+0013 SEND_VAL bool(true) 3
+0014 DO_FCALL
+0015 EXT_STMT
+0016 V15 = NEW 1 string("Composer\Autoload\ClassLoader")
+0017 INIT_FCALL 1 96 string("dirname")
+0018 INIT_FCALL 1 96 string("dirname")
+0019 SEND_VAL string("/home/daniel/www/phpbench/phpbench/vendor/composer/autoload_real.php") 1
+0020 V16 = DO_FCALL
+0021 SEND_VAR V16 1
+0022 V17 = DO_FCALL
+0023 SEND_VAR_NO_REF_EX V17 1
+0024 DO_FCALL
+0025 T19 = ASSIGN CV0($loader) V15
+0026 ASSIGN_STATIC_PROP string("loader")
+0027 OP_DATA T19
+0028 EXT_STMT
+0029 INIT_FCALL 1 96 string("spl_autoload_unregister")
+0030 SEND_VAL array(...) 1
+0031 DO_FCALL
+0032 EXT_STMT
+0033 T21 = DEFINED string("HHVM_VERSION")
+0034 T22 = BOOL_NOT T21
+0035 T23 = BOOL T22
+0036 T23 = JMPZ_EX T23 0047
+0037 INIT_FCALL 1 96 string("function_exists")
+0038 SEND_VAL string("zend_loader_file_encoded") 1
+0039 V24 = DO_FCALL
+0040 T25 = BOOL_NOT V24
+0041 T25 = JMPNZ_EX T25 0046
+0042 INIT_FCALL_BY_NAME 0 string("zend_loader_file_encoded")
+0043 V26 = DO_FCALL
+0044 T27 = BOOL_NOT V26
+0045 T25 = BOOL T27
+0046 T23 = BOOL T25
+0047 ASSIGN CV1($useStaticLoader) T23
+0048 EXT_STMT
+0049 JMPZ CV1($useStaticLoader) 0059
+0050 EXT_STMT
+0051 INCLUDE_OR_EVAL (require) string("/home/daniel/www/phpbench/phpbench/vendor/composer/autoload_static.php")
+0052 EXT_STMT
+0053 INIT_STATIC_METHOD_CALL 1 string("Composer\Autoload\ComposerStaticInited1dad5bad5e40595560d28332c7af39") string("getInitializer")
+0054 SEND_VAR_EX CV0($loader) 1
+0055 V30 = DO_FCALL
+0056 INIT_USER_CALL 0 string("call_user_func") V30
+0057 DO_FCALL
+0058 JMP 0096
+0059 EXT_STMT
+0060 V32 = INCLUDE_OR_EVAL (require) string("/home/daniel/www/phpbench/phpbench/vendor/composer/autoload_namespaces.php")
+0061 ASSIGN CV2($map) V32
+0062 EXT_STMT
+0063 V34 = FE_RESET_R CV2($map) 0072
+0064 T35 = FE_FETCH_R V34 CV3($path) 0072
+0065 ASSIGN CV4($namespace) T35
+0066 EXT_STMT
+0067 INIT_METHOD_CALL 2 CV0($loader) string("set")
+0068 SEND_VAR_EX CV4($namespace) 1
+0069 SEND_VAR_EX CV3($path) 2
+0070 DO_FCALL
+0071 JMP 0064
+0072 FE_FREE V34
+0073 EXT_STMT
+0074 V38 = INCLUDE_OR_EVAL (require) string("/home/daniel/www/phpbench/phpbench/vendor/composer/autoload_psr4.php")
+0075 ASSIGN CV2($map) V38
+0076 EXT_STMT
+0077 V40 = FE_RESET_R CV2($map) 0086
+0078 T41 = FE_FETCH_R V40 CV3($path) 0086
+0079 ASSIGN CV4($namespace) T41
+0080 EXT_STMT
+0081 INIT_METHOD_CALL 2 CV0($loader) string("setPsr4")
+0082 SEND_VAR_EX CV4($namespace) 1
+0083 SEND_VAR_EX CV3($path) 2
+0084 DO_FCALL
+0085 JMP 0078
+0086 FE_FREE V40
+0087 EXT_STMT
+0088 V44 = INCLUDE_OR_EVAL (require) string("/home/daniel/www/phpbench/phpbench/vendor/composer/autoload_classmap.php")
+0089 ASSIGN CV5($classMap) V44
+0090 EXT_STMT
+0091 JMPZ CV5($classMap) 0096
+0092 EXT_STMT
+0093 INIT_METHOD_CALL 1 CV0($loader) string("addClassMap")
+0094 SEND_VAR_EX CV5($classMap) 1
+0095 DO_FCALL
+0096 EXT_STMT
+0097 INIT_METHOD_CALL 1 CV0($loader) string("register")
+0098 SEND_VAL_EX bool(true) 1
+0099 DO_FCALL
+0100 EXT_STMT
+0101 JMPZ CV1($useStaticLoader) 0106
+0102 EXT_STMT
+0103 T48 = FETCH_STATIC_PROP_R string("files") string("Composer\Autoload\ComposerStaticInited1dad5bad5e40595560d28332c7af39")
+0104 ASSIGN CV6($includeFiles) T48
+0105 JMP 0109
+0106 EXT_STMT
+0107 V50 = INCLUDE_OR_EVAL (require) string("/home/daniel/www/phpbench/phpbench/vendor/composer/autoload_files.php")
+0108 ASSIGN CV6($includeFiles) V50
+0109 EXT_STMT
+0110 V52 = FE_RESET_R CV6($includeFiles) 0119
+0111 T53 = FE_FETCH_R V52 CV7($file) 0119
+0112 ASSIGN CV8($fileIdentifier) T53
+0113 EXT_STMT
+0114 INIT_FCALL_BY_NAME 2 string("composerRequireed1dad5bad5e40595560d28332c7af39")
+0115 SEND_VAR_EX CV8($fileIdentifier) 1
+0116 SEND_VAR_EX CV7($file) 2
+0117 DO_FCALL
+0118 JMP 0111
+0119 FE_FREE V52
+0120 EXT_STMT
+0121 RETURN CV0($loader)
+0122 EXT_STMT
+0123 RETURN null
+LIVE RANGES:
+     15: 0017 - 0025 (new)
+     34: 0064 - 0072 (loop)
+     40: 0078 - 0086 (loop)
+     52: 0111 - 0119 (loop)

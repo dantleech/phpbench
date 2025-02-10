@@ -12,6 +12,7 @@
 
 namespace PhpBench\Executor\Benchmark;
 
+use PhpBench\Remote\LaunchResult;
 use RuntimeException;
 use PhpBench\Compat\SymfonyOptionsResolverCompat;
 use PhpBench\Executor\BenchmarkExecutorInterface;
@@ -28,34 +29,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class TemplateExecutor implements BenchmarkExecutorInterface
 {
     final public const OPTION_PHP_CONFIG = 'php_config';
+
+    /**
+     * @deprecated This will be enabled unconditionally and removed in PHPBench 2.0
+     */
     final public const OPTION_SAFE_PARAMETERS = 'safe_parameters';
 
-    private const PHP_OPTION_MAX_EXECUTION_TIME = 'max_execution_time';
+    protected const PHP_OPTION_MAX_EXECUTION_TIME = 'max_execution_time';
 
-    public function __construct(private readonly Launcher $launcher, private readonly string $templatePath)
+    public function __construct(protected readonly Launcher $launcher, private readonly string $templatePath)
     {
     }
 
     public function execute(ExecutionContext $context, Config $config): ExecutionResults
     {
-        $tokens = $this->createTokens($context, $config);
-        $payload = $this->launcher->payload($this->templatePath, $tokens, $context->getTimeout());
-        $payload->mergePhpConfig(array_merge(
-            [
-                self::PHP_OPTION_MAX_EXECUTION_TIME => 0,
-            ],
-            $config[self::OPTION_PHP_CONFIG] ?? []
-        ));
+        $result = $this->launch($context, $config);
 
-        try {
-            $result = $payload->launch();
-        } catch (ScriptErrorException $error) {
-            throw new ExecutionError(sprintf(
-                "Benchmarking script exited with code %s\n\n%s",
-                $error->getExitCode() ?? 'unknown',
-                $error->getMessage()
-            ));
-        }
+        $result = $result->unserializeResult();
 
         if (isset($result['buffer']) && $result['buffer']) {
             throw new RuntimeException(sprintf(
@@ -115,5 +105,29 @@ class TemplateExecutor implements BenchmarkExecutorInterface
         }
 
         return $context->getParameterSet()->toUnserializedParameters();
+    }
+
+    protected function launch(ExecutionContext $context, Config $config): LaunchResult
+    {
+        $tokens = $this->createTokens($context, $config);
+        $payload = $this->launcher->payload($this->templatePath, $tokens, $context->getTimeout());
+        $payload->mergePhpConfig(array_merge(
+            [
+                self::PHP_OPTION_MAX_EXECUTION_TIME => 0,
+            ],
+            $config[self::OPTION_PHP_CONFIG] ?? []
+        ));
+
+        try {
+            $result = $payload->launchResult();
+        } catch (ScriptErrorException $error) {
+            throw new ExecutionError(sprintf(
+                "Benchmarking script exited with code %s\n\n%s",
+                $error->getExitCode() ?? 'unknown',
+                $error->getMessage()
+            ));
+        }
+
+        return $result;
     }
 }

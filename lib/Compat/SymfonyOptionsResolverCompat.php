@@ -6,6 +6,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use function method_exists;
 
+/**
+ * @deprecated can be removed in 2.0 as we don't support a non-compatible
+ * version of option-resolver
+ */
 class SymfonyOptionsResolverCompat
 {
     /**

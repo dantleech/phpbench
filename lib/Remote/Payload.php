@@ -14,7 +14,6 @@ namespace PhpBench\Remote;
 
 use PhpBench\Remote\Exception\ScriptErrorException;
 use RuntimeException;
-use Symfony\Component\Process\Process;
 
 use function escapeshellarg;
 
@@ -100,10 +99,7 @@ class Payload
         $this->phpPath = $phpPath;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function launch(): array
+    public function launchResult(): LaunchResult
     {
         $script = $this->readFile();
         $script = $this->replaceTokens($script);
@@ -123,7 +119,15 @@ class Payload
             ), $process->getExitCode());
         }
 
-        return $this->decodeResults($process);
+        return LaunchResult::fromProcess($process);
+    }
+
+    /**
+     * @return parameters
+     */
+    public function launch(): array
+    {
+        return $this->launchResult()->unserializeResult();
     }
 
     private function getIniString(): string
@@ -227,25 +231,5 @@ class Payload
         }
 
         unlink($scriptPath);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function decodeResults(Process $process): array
-    {
-        $output = $process->getOutput();
-
-        $result = @unserialize($output);
-
-        if (is_array($result)) {
-            return $result;
-        }
-
-        throw new RuntimeException(sprintf(
-            'Script "%s" did not return an array, got: %s',
-            $this->template,
-            $output
-        ));
     }
 }

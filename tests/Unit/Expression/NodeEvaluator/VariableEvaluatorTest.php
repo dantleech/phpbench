@@ -9,14 +9,14 @@ use PhpBench\Expression\Ast\IntegerNode;
 use PhpBench\Expression\Ast\Node;
 use PhpBench\Expression\Ast\StringNode;
 use PhpBench\Expression\Ast\VariableNode;
-use PhpBench\Expression\Exception\EvaluationError;
+use PhpBench\Expression\Exception\VariableNotFound;
 use PhpBench\Tests\Unit\Expression\EvaluatorTestCase;
 
 class VariableEvaluatorTest extends EvaluatorTestCase
 {
     public function testExceptionIfParameterNotFound(): void
     {
-        $this->expectException(EvaluationError::class);
+        $this->expectException(VariableNotFound::class);
         $this->expectExceptionMessage('not found');
         $this->evaluateNode(new VariableNode('foobar'), []);
     }
